@@ -9,8 +9,16 @@ describe("anchor-statking-app", () => {
   const program = anchor.workspace.AnchorStatkingApp as Program<AnchorStatkingApp>;
 
   it("Is initialized!", async () => {
-    // Add your test here.
-    const tx = await program.methods.initialize().rpc();
-    console.log("Your transaction signature", tx);
+    const stakingProgram = anchor.web3.Keypair.generate()
+    const poolOwner = (program.provider as anchor.AnchorProvider).wallet
+    const tx = await program.methods
+      .initialize()
+      .accounts({
+        pool: stakingProgram.publicKey,
+        authority: poolOwner.publicKey,
+      })
+      .signers([stakingProgram])
+      .rpc()
+    console.log(`tx ${tx}`)
   });
 });
